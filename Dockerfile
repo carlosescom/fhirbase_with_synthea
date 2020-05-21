@@ -1,7 +1,8 @@
 FROM postgres:10.5
 WORKDIR /fhirbase
 
-COPY demo/bundle.ndjson.gzip .
+RUN ./synthea/run_synthea --exporter.fhir.use_us_core_ig true --exporter.fhir.bulk_data true
+
 COPY bin/fhirbase-linux-amd64 /usr/bin/fhirbase
 
 RUN chmod +x /usr/bin/fhirbase
@@ -17,7 +18,7 @@ RUN PGDATA=/pgdata /docker-entrypoint.sh postgres  & \
     done && \
     psql -U postgres -c 'create database fhirbase;' && \
     fhirbase -d fhirbase init && \
-    fhirbase -d fhirbase load --mode=insert ./bundle.ndjson.gzip; \
+    fhirbase -d fhirbase load --mode=insert ./synthea/output/fhir/*; \
     pg_ctl -D /pgdata stop
 
 EXPOSE 3000
