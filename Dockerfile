@@ -1,6 +1,7 @@
 FROM postgres:10.5
 WORKDIR /fhirbase
 
+RUN ./synthea/gradlew build check test
 RUN ./synthea/run_synthea --exporter.fhir.use_us_core_ig true --exporter.fhir.bulk_data true
 
 COPY bin/fhirbase-linux-amd64 /usr/bin/fhirbase
